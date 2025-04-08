@@ -6,7 +6,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/mariomac/guara/test"
+	"github.com/mariomac/goava/test"
 )
 
 const timeout = 5 * time.Second

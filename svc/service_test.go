@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/mariomac/guara/test"
+	"github.com/mariomac/goava/test"
 )
 
 func TestSwarm_RegisterAfterStart(t *testing.T) {

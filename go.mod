@@ -1,4 +1,4 @@
-module github.com/mariomac/guara
+module github.com/mariomac/goava
 
 go 1.23
 
