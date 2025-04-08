@@ -33,6 +33,7 @@ func Interval(t time.Duration) EventuallyOption {
 // Eventually retries a test until it eventually succeeds. If the timeout is reached, the test fails
 // with the same failure as its last execution.
 func Eventually(t *testing.T, timeout time.Duration, testFunc func(_ require.TestingT), options ...EventuallyOption) {
+	t.Helper()
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
@@ -76,15 +77,16 @@ func Eventually(t *testing.T, timeout time.Duration, testFunc func(_ require.Tes
 		case err = <-errorCh:
 		case fatal = <-failCh:
 		case <-ctx.Done():
-			if fatal != nil {
+			switch {
+			case fatal != nil:
 				if err != nil {
 					t.Fatal(err)
 				} else {
 					t.Fatal()
 				}
-			} else if err != nil {
+			case err != nil:
 				t.Error(err)
-			} else {
+			default:
 				t.Error("timeout while waiting for test to complete")
 			}
 			return

@@ -27,7 +27,7 @@ func TestEventually_Fatal(t *testing.T) {
 
 func TestEventually_Timeout(t *testing.T) {
 	innerTest := &testing.T{}
-	Eventually(innerTest, 10*time.Millisecond, func(t require.TestingT) {
+	Eventually(innerTest, 10*time.Millisecond, func(_ require.TestingT) {
 		time.Sleep(5 * time.Second)
 	})
 	assert.True(t, innerTest.Failed())
@@ -80,7 +80,7 @@ func TestEventually_ErrorIfClauseOnlyContainsAssertions(t *testing.T) {
 	// Wrapping the tests inside another Eventually clause
 	continued := atomic.Bool{}
 	innerTest := &testing.T{}
-	Eventually(innerTest, 100*time.Millisecond, func(t require.TestingT) {
+	Eventually(innerTest, 100*time.Millisecond, func(_ require.TestingT) {
 		Eventually(innerTest, 10*time.Millisecond, func(t require.TestingT) {
 			assert.True(t, false)
 		})
@@ -99,7 +99,7 @@ func TestEventually_FatalIfClauseContainsRequires(t *testing.T) {
 	// Wrapping the tests inside another Eventually clause
 	continued := atomic.Bool{}
 	innerTest := &testing.T{}
-	Eventually(innerTest, 100*time.Millisecond, func(t require.TestingT) {
+	Eventually(innerTest, 100*time.Millisecond, func(_ require.TestingT) {
 		Eventually(innerTest, 10*time.Millisecond, func(t require.TestingT) {
 			require.True(t, false)
 		})

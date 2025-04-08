@@ -1,34 +1,40 @@
+version: "2"
 linters:
   enable:
-    - deadcode
-    - errcheck
-    - errorlint
     - cyclop
     - errname
+    - errorlint
     - exhaustive
-    - exportloopref
     - gocritic
-    - goimports
-    - gosimple
-    - govet
-    - ineffassign
     - revive
     - staticcheck
-    - structcheck
-    - stylecheck
-    - typecheck
-    - unused
-    - varcheck
-linters-settings:
-  stylecheck:
-    go: "1.17"
-  gocritic:
-    enabled-checks:
-      - hugeParam
-      - rangeExprCopy
-      - rangeValCopy
-      - indexAlloc
-      - deprecatedComment
-  cyclop:
-    max-complexity: 15
-
+  settings:
+    cyclop:
+      max-complexity: 15
+    gocritic:
+      enabled-checks:
+        - hugeParam
+        - rangeExprCopy
+        - rangeValCopy
+        - indexAlloc
+        - deprecatedComment
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
+    - goimports
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

@@ -11,6 +11,6 @@ lint:
 
 test:
 	@echo "=== [ test ]: Running unit tests..."
-	$(GOCMD) test -mod vendor -coverpkg=./... -coverprofile coverage.out -a -race ./pkg/...
+	$(GOCMD) test -mod vendor -coverpkg=./... -coverprofile coverage.out -a -race ./...
 
 .PHONY: all build clean lint compile test fmt
