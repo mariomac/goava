@@ -19,7 +19,7 @@ func TestPutGetRemove(t *testing.T) {
 	lru.Put("foo", "bar")
 	v, ok := lru.Get("foo")
 	assert.True(t, ok)
-	assert.EqualValues(t, "bar", string(v))
+	assert.Equal(t, "bar", string(v))
 
 	_, ok = lru.Get("baz")
 	assert.False(t, ok)
@@ -27,7 +27,7 @@ func TestPutGetRemove(t *testing.T) {
 	lru.Put("baz", "bae")
 	v, ok = lru.Get("baz")
 	assert.True(t, ok)
-	assert.EqualValues(t, "bae", string(v))
+	assert.Equal(t, "bae", string(v))
 
 	lru.Remove("foo")
 	_, ok = lru.Get("foo")
@@ -42,13 +42,13 @@ func TestLRUOldestRemoval(t *testing.T) {
 	lru.Put("tri", "tra")
 	v, ok := lru.Get("foo")
 	require.True(t, ok)
-	require.EqualValues(t, "bar", string(v))
+	require.Equal(t, "bar", string(v))
 	v, ok = lru.Get("baz")
 	require.True(t, ok)
-	require.EqualValues(t, "bae", string(v))
+	require.Equal(t, "bae", string(v))
 	v, ok = lru.Get("tri")
 	require.True(t, ok)
-	require.EqualValues(t, "tra", string(v))
+	require.Equal(t, "tra", string(v))
 
 	// WHEN we add a value that overflows the max size
 	lru.Put("toma", "ya!")
@@ -58,13 +58,13 @@ func TestLRUOldestRemoval(t *testing.T) {
 	assert.False(t, ok)
 	v, ok = lru.Get("baz")
 	assert.True(t, ok)
-	assert.EqualValues(t, "bae", string(v))
+	assert.Equal(t, "bae", string(v))
 	v, ok = lru.Get("tri")
 	assert.True(t, ok)
-	assert.EqualValues(t, "tra", string(v))
+	assert.Equal(t, "tra", string(v))
 	v, ok = lru.Get("toma")
 	assert.True(t, ok)
-	assert.EqualValues(t, "ya!", string(v))
+	assert.Equal(t, "ya!", string(v))
 
 	// AND when we access a given element
 	lru.Get("baz")
@@ -72,7 +72,7 @@ func TestLRUOldestRemoval(t *testing.T) {
 	lru.Put("chin", "cha")
 	v, ok = lru.Get("baz")
 	assert.True(t, ok)
-	assert.EqualValues(t, "bae", string(v))
+	assert.Equal(t, "bae", string(v))
 	_, ok = lru.Get("tri")
 	assert.False(t, ok)
 
@@ -88,9 +88,9 @@ func TestLRUOldestRemoval(t *testing.T) {
 
 	v, ok = lru.Get("toma")
 	assert.True(t, ok)
-	assert.EqualValues(t, "1234567", string(v))
+	assert.Equal(t, "1234567", string(v))
 
 	v, ok = lru.Get("baz")
 	assert.True(t, ok)
-	assert.EqualValues(t, "bae", string(v))
+	assert.Equal(t, "bae", string(v))
 }

@@ -66,7 +66,6 @@ func TestChainedBypass(t *testing.T) {
 
 	assert.Equal(t, 123, test.ReadChannel(t, ch3, timeout))
 	test.ChannelEmpty(t, ch3, 5*time.Millisecond)
-
 }
 
 func TestErrors(t *testing.T) {

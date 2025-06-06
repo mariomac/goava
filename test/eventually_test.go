@@ -11,7 +11,7 @@ import (
 
 func TestEventually_Error(t *testing.T) {
 	innerTest := &testing.T{}
-	fatalEventually(innerTest, 10*time.Millisecond, func(t require.TestingT) {
+	fatalEventually(innerTest, func(t require.TestingT) {
 		t.Errorf("fooo")
 	})
 	assert.True(t, innerTest.Failed())
@@ -19,7 +19,7 @@ func TestEventually_Error(t *testing.T) {
 
 func TestEventually_Fatal(t *testing.T) {
 	innerTest := &testing.T{}
-	fatalEventually(innerTest, 10*time.Millisecond, func(t require.TestingT) {
+	fatalEventually(innerTest, func(t require.TestingT) {
 		t.FailNow()
 	})
 	assert.True(t, innerTest.Failed())
@@ -44,7 +44,7 @@ func TestEventually_Success(t *testing.T) {
 func TestEventually_Interval(t *testing.T) {
 	innerTest := &testing.T{}
 	executions := 0
-	fatalEventually(innerTest, 10*time.Millisecond, func(t require.TestingT) {
+	fatalEventually(innerTest, func(t require.TestingT) {
 		executions++
 		t.FailNow()
 	}, Interval(20*time.Second))
@@ -55,6 +55,7 @@ func TestEventually_Interval(t *testing.T) {
 func TestEventually_InternallyContinueAfterAssertFail(t *testing.T) {
 	continued := atomic.Bool{}
 	innerTest := &testing.T{}
+	//nolint:testifylint
 	Eventually(innerTest, 10*time.Millisecond, func(t require.TestingT) {
 		assert.True(t, false)
 		continued.Store(true)
@@ -67,7 +68,8 @@ func TestEventually_InternallyContinueAfterAssertFail(t *testing.T) {
 func TestEventually_InternallyDoNotContinueAfterRequireFail(t *testing.T) {
 	continued := atomic.Bool{}
 	innerTest := &testing.T{}
-	fatalEventually(innerTest, 10*time.Millisecond, func(t require.TestingT) {
+	//nolint:testifylint
+	fatalEventually(innerTest, func(t require.TestingT) {
 		require.True(t, false)
 		continued.Store(true)
 		assert.True(t, true) // does not matter if a later assertion succeeds
@@ -80,6 +82,7 @@ func TestEventually_ErrorIfClauseOnlyContainsAssertions(t *testing.T) {
 	// Wrapping the tests inside another Eventually clause
 	continued := atomic.Bool{}
 	innerTest := &testing.T{}
+	//nolint:testifylint
 	Eventually(innerTest, 100*time.Millisecond, func(_ require.TestingT) {
 		Eventually(innerTest, 10*time.Millisecond, func(t require.TestingT) {
 			assert.True(t, false)
@@ -99,6 +102,7 @@ func TestEventually_FatalIfClauseContainsRequires(t *testing.T) {
 	// Wrapping the tests inside another Eventually clause
 	continued := atomic.Bool{}
 	innerTest := &testing.T{}
+	//nolint:testifylint
 	Eventually(innerTest, 100*time.Millisecond, func(_ require.TestingT) {
 		Eventually(innerTest, 10*time.Millisecond, func(t require.TestingT) {
 			require.True(t, false)
@@ -116,11 +120,11 @@ func TestEventually_FatalIfClauseContainsRequires(t *testing.T) {
 
 // fatalEventually wraps the execution of an eventually function that should end with fatal,
 // avoiding that any internal "fatal" invocation panics because of the goruntime.Goexit invocation
-func fatalEventually(t *testing.T, timeout time.Duration, testFunc func(_ require.TestingT), options ...EventuallyOption) {
+func fatalEventually(t *testing.T, testFunc func(_ require.TestingT), options ...EventuallyOption) {
 	returnCh := make(chan struct{})
 	go func() {
 		defer close(returnCh)
-		Eventually(t, timeout, testFunc, options...)
+		Eventually(t, 10*time.Millisecond, testFunc, options...)
 	}()
 
 	<-returnCh

@@ -34,6 +34,7 @@ func Interval(t time.Duration) EventuallyOption {
 // with the same failure as its last execution.
 func Eventually(t *testing.T, timeout time.Duration, testFunc func(_ require.TestingT), options ...EventuallyOption) {
 	t.Helper()
+	//nolint:usetesting
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
 
@@ -42,7 +43,7 @@ func Eventually(t *testing.T, timeout time.Duration, testFunc func(_ require.Tes
 		opt(&config)
 	}
 
-	success := make(chan interface{})
+	success := make(chan any)
 	errorCh := make(chan error)
 	failCh := make(chan error)
 
@@ -103,7 +104,7 @@ type testResult struct {
 	fatalCh chan<- error
 }
 
-func (te *testResult) Errorf(format string, args ...interface{}) {
+func (te *testResult) Errorf(format string, args ...any) {
 	te.failed.Store(true)
 	te.errorCh <- fmt.Errorf(format, args...)
 }

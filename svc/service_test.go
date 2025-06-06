@@ -26,12 +26,13 @@ func TestSwarm_RegisterAfterStart(t *testing.T) {
 		return func(_ context.Context) {}, nil
 	})
 }
+
 func TestSwarm_StartWithError(t *testing.T) {
 	var s Swarm
 	s.Register(func(_ context.Context) (Runner, error) {
 		return nil, errors.New("creation error")
 	})
-	assert.Error(t, s.Start(context.Background()))
+	assert.Error(t, s.Start(t.Context()))
 }
 
 func TestSwarm_StartTwice(t *testing.T) {
@@ -39,7 +40,7 @@ func TestSwarm_StartTwice(t *testing.T) {
 	s.Register(func(_ context.Context) (Runner, error) {
 		return func(_ context.Context) {}, nil
 	})
-	err := s.Start(context.Background())
+	err := s.Start(t.Context())
 	if err != nil {
 		t.Fatalf("expected no error, got %v", err)
 	}
@@ -48,7 +49,7 @@ func TestSwarm_StartTwice(t *testing.T) {
 			t.Fatalf("expected panic, got none")
 		}
 	}()
-	_ = s.Start(context.Background())
+	_ = s.Start(t.Context())
 }
 
 func TestSwarm_RunnerExecution(t *testing.T) {
@@ -59,7 +60,7 @@ func TestSwarm_RunnerExecution(t *testing.T) {
 			runnerExecuted.Store(true)
 		}, nil
 	})
-	require.NoError(t, s.Start(context.Background()))
+	require.NoError(t, s.Start(t.Context()))
 	test.Eventually(t, 5*time.Second, func(t require.TestingT) {
 		assert.True(t, runnerExecuted.Load(), "runner was not executed")
 	})
@@ -88,7 +89,7 @@ func TestSwarm_CreatorFailure(t *testing.T) {
 	})
 
 	// second creator fails, so the first one should be cancelled and the third one should not be executed
-	require.Error(t, s.Start(context.Background()))
+	require.Error(t, s.Start(t.Context()))
 	test.Eventually(t, 5*time.Second, func(t require.TestingT) {
 		assert.True(t, c1cancel.Load(), "c1 was not cancelled")
 	})
@@ -110,7 +111,7 @@ func TestSwarm_ContextPassed(t *testing.T) {
 	s.Register(func(_ context.Context) (Runner, error) { return innerRunner, nil })
 	s.Register(func(_ context.Context) (Runner, error) { return innerRunner, nil })
 	s.Register(func(_ context.Context) (Runner, error) { return innerRunner, nil })
-	ctx, cancel := context.WithCancel(context.Background())
+	ctx, cancel := context.WithCancel(t.Context())
 	require.NoError(t, s.Start(ctx))
 	test.Eventually(t, 5*time.Second, func(_ require.TestingT) {
 		startWg.Wait()
@@ -119,5 +120,4 @@ func TestSwarm_ContextPassed(t *testing.T) {
 	test.Eventually(t, 5*time.Second, func(_ require.TestingT) {
 		doneWg.Wait()
 	})
-
 }
